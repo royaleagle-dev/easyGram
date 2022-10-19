@@ -1,0 +1,78 @@
+{% extends 'phonebook/base.html' %}
+
+{% block content %}
+<div>
+    <div>
+        <div class = "p-1">
+            {% for log in logs %}
+            <div class = "log">
+                <span>{{log.timestamp}}</span>
+                <p>{{ log.activity }}</p>
+            </div>
+            <style>
+                .log{
+                    background-color: #eee;
+                    padding: 10px;
+                    margin: 10px;
+                }
+
+                .log span{
+                    color: black;
+                    font-size: 0.8em;
+                }
+
+                .log p{
+                    margin-top: 10px;
+                    color: crimson;
+                }
+            </style>
+
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $("#quickAddForm input").addClass('form-control')
+    $("#quickAddForm div").addClass('mb-3')
+
+    let message_shown = 0
+
+    $(document).ready(function(){
+        const show_message = $(".flash_message").show('fast')
+        if(show_message){
+            message_shown = 1
+        }
+
+        if(message_shown === 1){
+            console.log('reached here');
+            setTimeout(function(){
+                $(".flash_message").hide('fast')
+            }, 3000)
+        }
+    })
+</script>
+
+<script>
+    let trashContact = (data_id, container_id) => {
+        token = $(".trash-token input").val()
+        console.log(token)
+        const url = `{% url 'phonebook:trash' %}`
+        $.post(url, {'id':data_id, 'csrfmiddlewaretoken':token}, function(response){
+            switch (response.status){
+                case 'success':
+                    console.log(response.message)
+                    toastr.success(response.message)
+                    $(`#${container_id}`).hide('fast');
+                    break;
+                case 'error':
+                    toastr.error(response.error)
+                    console.log(response.message)
+                    break;
+            }
+        })
+    }
+</script>
+{% endblock %}

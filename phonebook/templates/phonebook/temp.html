@@ -1,0 +1,22 @@
+<div>
+    <h6 class = "p-2 text-light bg-info">Quick Add</h6>
+    <div>    
+        <form id="quickAddForm" method = "POST" novalidate="true">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class = "fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+                {% if field.help_text %}
+                <p class = "help">{{ field.help_text|safe }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <div>
+                <button class = "btn btn-primary" type = "submit">Add Contact</button>
+            </div>
+        </form>
+
+    </div>
+</div>
