@@ -13,13 +13,15 @@
         </div>
         <div class = "p-2 mt-3">
 
+            {% if contacts %}
+
             {% for item in contacts %}
 
             <div class = "trash-token">
                 {% csrf_token %}
             </div>
             
-            <div class = "bg-light p-3 mb-3" id = "contact-{{ item.id }}">
+            <div class = "bg-light p-3 mb-3" id = "contact-{{ item.id }}" style = "">
                 <p>{{item.firstname}} {{ item.lastname }}</p>
                 <hr>
                 <div class = "row">
@@ -35,8 +37,8 @@
                               Actions
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                              <li><a class="dropdown-item" href="#">Edit</a></li>
-                              <li><a class="dropdown-item bg-danger text-light" href="javascript:void(0)" onclick = "trashContact('{{ item.id }}', 'contact-{{ item.id }}')">Trash</a></li>
+                              <li><a class="dropdown-item" href="#">Restore</a></li>
+                              <li><a class="dropdown-item bg-danger text-light" href="javascript:void(0)" onclick = "deleteContact('{{ item.id }}', 'contact-{{ item.id }}')">Delete</a></li>
                             </ul>
                         </div>
                     </div>
@@ -44,38 +46,25 @@
             </div>
 
             {% endfor %}
+
+            {% else %}
+            <div style = "text-align:center;">
+                <p class = "text-danger">Recycle Bin is Empty</p>
+            </div>
+            {% endif %}
+
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block javascript %}
-<script>
-    $("#quickAddForm input").addClass('form-control')
-    $("#quickAddForm div").addClass('mb-3')
-
-    let message_shown = 0
-
-    $(document).ready(function(){
-        const show_message = $(".flash_message").show('fast')
-        if(show_message){
-            message_shown = 1
-        }
-
-        if(message_shown === 1){
-            console.log('reached here');
-            setTimeout(function(){
-                $(".flash_message").hide('fast')
-            }, 3000)
-        }
-    })
-</script>
 
 <script>
-    let trashContact = (data_id, container_id) => {
+    let deleteContact = (data_id, container_id) => {
         token = $(".trash-token input").val()
         console.log(token)
-        const url = `{% url 'phonebook:trash' %}`
+        const url = `{% url 'phonebook:delete' %}`
         $.post(url, {'id':data_id, 'csrfmiddlewaretoken':token}, function(response){
             switch (response.status){
                 case 'success':

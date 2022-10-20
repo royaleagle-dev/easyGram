@@ -49,7 +49,7 @@
             <section class = "col-md-3">
               <nav class = "sideNav">
                 <a href = "{% url 'phonebook:index' %}">Contacts</a>
-                <a href = "" title = "not yet assigned">Trashed</a>
+                <a href = "{% url 'phonebook:trash' %}">Trash</a>
                 <a href = "{% url 'phonebook:log' %}">Activity Log</a>
                 <a href = "" title = "not yet assigned">Settings</a>
               </nav>
@@ -145,6 +145,12 @@
         <script src = "{% static 'toastr/build/toastr.min.js' %}"></script>
 
         <script>
+          
+            $("input[name='email']").addClass('form-control mb-2')
+            $("input[name='firstname']").addClass('form-control mb-2')
+            $("input[name='lastname']").addClass('form-control mb-2')
+            $("input[name='phone']").addClass('form-control mb-2')
+
           //console.log($("#quickAddForm"))
           $("#quickAddForm").submit(function(e){
             e.preventDefault()

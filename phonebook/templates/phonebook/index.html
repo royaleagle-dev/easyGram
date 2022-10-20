@@ -13,6 +13,8 @@
         </div>
         <div class = "p-2 mt-3">
 
+            {% if contacts %}
+
             {% for item in contacts %}
 
             <div class = "trash-token">
@@ -44,33 +46,19 @@
             </div>
 
             {% endfor %}
+
+            {% else %}
+            <div style = "text-align:center;">
+                <p class="text-danger">No Contact here yet, Add some with the + button</p>
+            </div>
+            {% endif %}
+
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block javascript %}
-<script>
-    $("#quickAddForm input").addClass('form-control')
-    $("#quickAddForm div").addClass('mb-3')
-
-    let message_shown = 0
-
-    $(document).ready(function(){
-        const show_message = $(".flash_message").show('fast')
-        if(show_message){
-            message_shown = 1
-        }
-
-        if(message_shown === 1){
-            console.log('reached here');
-            setTimeout(function(){
-                $(".flash_message").hide('fast')
-            }, 3000)
-        }
-    })
-</script>
-
 <script>
     let trashContact = (data_id, container_id) => {
         token = $(".trash-token input").val()

@@ -48,8 +48,10 @@ class TrashView(View):
 
     def get(self, request):
         trashed_contacts = Contact.objects.filter(trashed = True).order_by('-firstname')
+        form = QuickAddForm()
         context = {
-            'contacts' : trashed_contacts
+            'contacts' : trashed_contacts,
+            'form' : form,
         }
         return render(request, 'phonebook/trashed.html', context)
     
@@ -57,11 +59,27 @@ class TrashView(View):
         id = request.POST.get('id')
         contact = get_object_or_404(Contact, id=id)
         contact.trashed = True
-        contact.save()
-        messages.success(request, "Contact moved to trash")
-        return JsonResponse({'status':'success', 'message':'Contact moved to trash successfully'})
+        save = contact.save()
+        if(save == None):
+            activity_logger = ActivityLog(activity=f"Moved Contact <{contact.firstname}> to Trash")
+            activity_logger.save()
+            return JsonResponse({'status':'success', 'message':'Contact moved to trash successfully'})
 
 class LogView(ListView):
     model = ActivityLog
     template_name = 'phonebook/logs.html'
     context_object_name = 'logs'
+
+    def get_queryset(self):
+        return ActivityLog.objects.all().order_by('-id')
+
+class DeleteView(View):
+    def post(self, request):
+        id = request.POST.get('id')
+        if(id):
+            contact = get_object_or_404(Contact, id=id)
+            delete = contact.delete()
+            if(delete):
+                return JsonResponse({'status':'success', 'message':'Contact deleted successfully'})
+            else:
+                return JsonResponse({'status':'warning', 'message':'An error occured, Contact cannot be deleted.'})

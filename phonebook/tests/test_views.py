@@ -17,14 +17,7 @@ class TestIndexView(TestCase):
         self.assertQuerysetEqual(response.context['contacts'], [])
 
     def test_trashed_contacts(self):
-        response = self.client.get(reverse('phonebook:trash'))
-        contact1 = create_contact('Ayotunde', 'Okunubi', '09086756523')
-        contact2 = create_contact('Olaoluwapo', 'Okunubi', '09086756523')
-        contact3  = create_contact('Adebisi', 'Okunubi', '09086756523')
-        contact1.trashed=True; contact1.save()
-        contact3.trashed=True; contact3.save()
-        self.assertEqual(response.status_code, 200)
-        self.assertQuerysetEqual(response.context['contacts'], [contact1, contact3])
+        pass
 
     def test_add_new_contact(self):
         url = reverse('phonebook:index')
@@ -38,7 +31,7 @@ class TestIndexView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, b'{"status": "success", "message": "Contact added successfully"}')
     
-    def test_add_new_contact_error(self):
+    def test_add_new_contact_error_missing_field(self):
         url = reverse('phonebook:index')
         contact_data = {
             'firstname': '',
@@ -47,14 +40,23 @@ class TestIndexView(TestCase):
             'email': 'ay@gmail.com',
         }
         response = self.client.post(url, contact_data)
-        self.assertEqual(response.content, b'{"status": "warning", "message": "One or more errors occured, Contact cannot be added"}'
+        self.assertEqual(response.content, b'{"status": "warning", "message": "A required field is missing, Contact cannot be added"}'
 )
 
 
 class TestTrashedView(TestCase):
 
     def test_trashed_view(self):
-        pass
+        
+        contact1 = create_contact('Ayotunde', 'Okunubi', '09086756523')
+        contact2 = create_contact('Olaoluwapo', 'Okunubi', '09086756523')
+        contact3  = create_contact('Adebisi', 'Okunubi', '09086756523')
+        contact1.trashed=True; contact1.save()
+        contact3.trashed=True; contact3.save()
+        #print(response)
+        response = self.client.get(reverse('phonebook:trash'))
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerysetEqual(response.context['contacts'], [contact1, contact3])
 
     def test_contact_not_exist(self):
         pass
